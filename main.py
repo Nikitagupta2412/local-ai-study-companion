@@ -1,5 +1,11 @@
 import requests
-import json
+import os
+
+def read_study_notes(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.read()
+    return None
 
 def ask_local_ai(prompt):
     url = "http://localhost:11434/api/generate"
@@ -16,5 +22,14 @@ def ask_local_ai(prompt):
         return f"Error: {response.status_code}"
 
 if __name__ == "__main__":
-    print("Testing Ollama Connection...")
-    print(ask_local_ai("Summarize why local AI is great for student privacy in one sentence."))
+    notes_path = "notes/sample_study_notes.txt"
+    note_content = read_study_notes(notes_path)
+    
+    if note_content:
+        print("Reading local notes and sending to Ollama...")
+        prompt = f"Please summarize these study notes into 3 key bullet points:\n\n{note_content}"
+        result = ask_local_ai(prompt)
+        print("\n--- AI Summary ---")
+        print(result)
+    else:
+        print(f"Could not find notes file at {notes_path}")
